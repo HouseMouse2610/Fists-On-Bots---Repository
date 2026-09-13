@@ -1,3 +1,11 @@
 [gd_scene format=3 uid="uid://cjrbq25tvo3qc"]
 
+[ext_resource type="PackedScene" uid="uid://dh3iwgaqdgdi5" path="res://Scenes/Environment/tile_map.tscn" id="1_6lc5y"]
+[ext_resource type="PackedScene" uid="uid://b465x2ooket4h" path="res://Scenes/Player/player.tscn" id="2_pveyk"]
+
 [node name="Node2D" type="Node2D" unique_id=226915689]
+
+[node name="TileMap" parent="." unique_id=705154172 instance=ExtResource("1_6lc5y")]
+
+[node name="Player" parent="." unique_id=1800617168 instance=ExtResource("2_pveyk")]
+position = Vector2(0, -9)
