@@ -2,6 +2,7 @@ class_name Player
 extends CharacterBody2D
 
 @onready var sprite = $AnimatedSprite2D
+@onready var attack_area = $AttackArea2D
 
 var direction : float = 0
 
@@ -38,10 +39,15 @@ func run_state(delta) -> void:
 			move_player_x(delta)
 			move_player_y(delta)
 		state.ATTACK:
-			pass
+			move_player_x(delta)
+			move_player_y(delta)
+			attack_area.attack()
 
 func change_state():
-	if velocity.x == 0 and is_on_floor():
+	if Input.is_action_pressed("Attack"):
+		curret_state = state.ATTACK
+		return
+	elif velocity.x == 0 and is_on_floor():
 		curret_state = state.IDLE
 	elif velocity.x != 0 and is_on_floor():
 		curret_state = state.WALK
@@ -49,6 +55,7 @@ func change_state():
 		curret_state = state.JUMP
 	elif velocity.y > 0 and not is_on_floor():
 		curret_state = state.FALL
+	return
 
 func move_player_x(delta):
 	if direction != 0:
@@ -66,6 +73,9 @@ func move_player_x(delta):
 func move_player_y(delta):
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = jump_velocity
+	
+	if Input.is_action_just_released("Jump") and not is_on_floor() and velocity.y < 0:
+		velocity.y = fall_mult
 	
 	if not is_on_floor():
 		if velocity.y > 0:

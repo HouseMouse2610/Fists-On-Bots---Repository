@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://xev3ewvebour" path="res://Scripts/Player/player.gd" id="1_a3d8c"]
 [ext_resource type="Texture2D" uid="uid://c064mtg5dawno" path="res://Assets/Sprites/Player/Sprite Fists On Bots Player.png" id="1_uvnfx"]
-[ext_resource type="Script" uid="uid://cjwcnyoo4rk2o" path="res://Scenes/Player/animated_sprite_2d.gd" id="3_xpcdj"]
+[ext_resource type="Script" uid="uid://cjwcnyoo4rk2o" path="res://Scripts/Player/animated_sprite_2d.gd" id="3_xpcdj"]
+[ext_resource type="Script" uid="uid://b48u02yhma6tb" path="res://Scripts/Player/attack_area_2d.gd" id="4_mtuoh"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g4v7s"]
 radius = 8.0
@@ -302,6 +303,9 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g4v7s"]
+size = Vector2(41, 34)
+
 [node name="Player" type="CharacterBody2D" unique_id=1800617168 groups=["Player"]]
 script = ExtResource("1_a3d8c")
 
@@ -311,10 +315,21 @@ shape = SubResource("CapsuleShape2D_g4v7s")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=335390248]
 sprite_frames = SubResource("SpriteFrames_g4v7s")
-animation = &"Idle"
+animation = &"Air Attack"
 autoplay = "Idle"
-frame = 2
-frame_progress = 0.36117703
 script = ExtResource("3_xpcdj")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1257559746]
+
+[node name="AttackArea2D" type="Area2D" parent="." unique_id=615588486]
+script = ExtResource("4_mtuoh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea2D" unique_id=972440366]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(12, 8)
+shape = SubResource("RectangleShape2D_g4v7s")
+disabled = true
+debug_color = Color(1, 0.05882353, 0.05882353, 0.41960785)
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="AnimatedSprite2D" method="_on_animation_finished"]
