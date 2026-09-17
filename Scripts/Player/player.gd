@@ -12,6 +12,7 @@ var direction : float = 0
 @export var jump_velocity : float = -250.0
 @export var gravity : float = 625.0
 @export var fall_mult : float = 2.0
+@export var can_attack_air : bool = true
 
 enum state{IDLE, WALK, JUMP, FALL, ATTACK}
 @export var curret_state = state.IDLE
@@ -21,6 +22,7 @@ func _physics_process(_delta: float) -> void:
 	change_state()
 	run_state(_delta)
 	sprite.update_sprite()
+	attack_area.attack()
 	
 	move_and_slide()
 
@@ -41,24 +43,29 @@ func run_state(delta) -> void:
 		state.ATTACK:
 			move_player_x(delta)
 			move_player_y(delta)
-			attack_area.attack()
 
 func change_state():
+	if curret_state != state.ATTACK:
+		if velocity.x == 0 and is_on_floor():
+			curret_state = state.IDLE
+		elif velocity.x != 0 and is_on_floor():
+			curret_state = state.WALK
+		elif velocity.y < 0 and not is_on_floor():
+			curret_state = state.JUMP
+		elif velocity.y > 0 and not is_on_floor():
+			curret_state = state.FALL
 	if Input.is_action_pressed("Attack"):
 		curret_state = state.ATTACK
-		return
-	elif velocity.x == 0 and is_on_floor():
-		curret_state = state.IDLE
-	elif velocity.x != 0 and is_on_floor():
-		curret_state = state.WALK
-	elif velocity.y < 0 and not is_on_floor():
-		curret_state = state.JUMP
-	elif velocity.y > 0 and not is_on_floor():
-		curret_state = state.FALL
 	return
 
 func move_player_x(delta):
-	if direction != 0:
+	if curret_state == state.ATTACK and is_on_floor():
+		velocity.x = move_toward(velocity.x, 
+		((speed / 100) * 28) * direction, 
+		aceleration * delta)
+		print(velocity.x)
+	
+	elif direction != 0:
 		if velocity.x * direction < 0:
 			velocity.x = move_toward(velocity.x, 
 			speed * direction, 
@@ -67,15 +74,26 @@ func move_player_x(delta):
 			velocity.x = move_toward(velocity.x, 
 			speed * direction, 
 			aceleration * delta)
+	
 	elif direction == 0:
-		velocity.x = move_toward(velocity.x, 0, friction * delta)
+		velocity.x = move_toward(velocity.x, 
+		0, 
+		friction * delta)
 
 func move_player_y(delta):
+	if Input.is_action_just_pressed("Attack") and not is_on_floor():
+		if can_attack_air:
+			velocity.y = jump_velocity * 0.75
+			can_attack_air = false
+	
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = jump_velocity
 	
 	if Input.is_action_just_released("Jump") and not is_on_floor() and velocity.y < 0:
 		velocity.y = fall_mult
+	
+	if is_on_floor():
+		can_attack_air = true
 	
 	if not is_on_floor():
 		if velocity.y > 0:
