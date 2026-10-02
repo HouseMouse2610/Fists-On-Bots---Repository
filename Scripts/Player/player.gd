@@ -63,7 +63,6 @@ func move_player_x(delta):
 		velocity.x = move_toward(velocity.x, 
 		((speed / 100) * 28) * direction, 
 		aceleration * delta)
-		print(velocity.x)
 	
 	elif direction != 0:
 		if velocity.x * direction < 0:

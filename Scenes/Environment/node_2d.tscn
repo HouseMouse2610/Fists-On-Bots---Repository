@@ -8,4 +8,4 @@
 [node name="TileMap" parent="." unique_id=705154172 instance=ExtResource("1_6lc5y")]
 
 [node name="Player" parent="." unique_id=1800617168 instance=ExtResource("2_pveyk")]
-position = Vector2(0, -9)
+position = Vector2(-144, -9)
